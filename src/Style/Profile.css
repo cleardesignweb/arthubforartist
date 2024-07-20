@@ -1,0 +1,166 @@
+.mainArtistProfile {
+    margin: 0 auto;
+    margin-top: 100px;
+    width: 80%;
+    justify-content: center;
+ }
+  .artistProfile{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .artistProfile h1{
+    font-size: 40px;
+    font-weight: 700;
+    justify-content: center;
+    align-items: center;    
+    color: #494949;    
+    padding: 10px;
+    }
+
+  .logOut h2{
+    font-size: 20px;
+    font-weight: 700;
+    justify-content: center;
+    align-items: center;    
+    color: #494949;
+    /* font-family: 'Courier New', Courier, monospace; */
+    background-color: #f62c2c;
+    color: #f5f5f5;
+    padding: 10px;
+    }
+
+    .logOut h2:hover{
+      cursor: pointer;
+      transition: 0.5s; 
+      transform: scale(1.1);
+      background-color: #494944;
+      color: #f5f5f5;
+    }
+  
+ 
+    .artworksContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; 
+        background-color: #f9f9f9;
+        }
+      
+    #profileArtWorkContainer {
+        margin-top: 50px;
+    }
+
+      .artwork {
+        overflow: hidden;     
+        margin: 10px;
+        padding: 10px;
+        transition: transform 0.3s;
+      }
+      
+      .artcollectionbox {
+        display: flex;
+        flex-direction: column;
+        /* align-items: center; */
+      }
+      
+      .artcollectionbox img {
+        width: 500px;
+        height: 300px;
+        margin-bottom: 10px;
+      }
+      
+ 
+      .artworksContainer h1 {
+        font-size: 1.5em;
+        color: #333;
+      }
+      
+      .artworksContainer h2 {
+        font-size: 17px;
+        color: #494949;
+      }
+      
+      .editIcon {
+        font-size: 1.5em;
+        color: #333;
+        cursor: pointer;
+        margin: 10px;
+      }
+      
+      .editIcon:hover {
+        color: #555;
+      }
+      
+      @media (max-width: 768px) {
+        .artworksContainer {
+          flex-direction: column;
+          padding: 15px;
+        }
+      
+        .artwork {
+          max-width: 100%;
+        }
+      
+        .artworkDetails h1 {
+          font-size: 1.3em;
+        }
+      
+        .artworkDetails h2 {
+          font-size: 1em;
+        }
+      
+        .editIcon {
+          font-size: 1.2em;
+          margin: 5px;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .artworksContainer {
+          padding: 10px;
+        }
+      
+        .artworkDetails h1 {
+          font-size: 1.2em;
+        }
+      
+        .artworkDetails h2 {
+          font-size: 0.9em;
+        }
+      
+        .editIcon {
+          font-size: 1em;
+          margin: 3px;
+        }
+      }
+      
+      .profSection1{ 
+        margin-top: 50px;
+      }
+
+      .profSection1 h1{
+        font-size: 70px;
+      }
+
+      .profSection1 a {
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        width: 200px;
+        padding: 10px;
+        text-decoration: none;
+        border: none;
+        color: #494949;
+      }
+
+      .profSection1 a:hover{
+        background-color: #494944;
+        color: #f5f5f5;
+        cursor: pointer;
+        transition: all 0.5s ease-in-out;
+        transition: 0.3s ease;
+      }
+
+ 
