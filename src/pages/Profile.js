@@ -3,19 +3,23 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db, storage } from '../Data/Firebase';
 import { collection, deleteDoc, doc, getDocs, orderBy, query, where } from 'firebase/firestore';
 import '../Style/Profile.css'
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { IoAdd, IoLogOut } from 'react-icons/io5';
 import { deleteObject, ref } from 'firebase/storage';
 import { toast } from 'react-toastify';
 import Notiflix from "notiflix";
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import {  FaTrash } from 'react-icons/fa';
+import { useAuth } from '../auth/AuthContext';
 
 const Profile = () => {
-
+  const {user} = useAuth()
   const [getUserName, setGetUserName] = useState([]);
   const [getArtistsInfo, setGetArtistsInfo] = useState([]);
   const navigate = useNavigate();
-
+ 
+ 
+ 
+ 
   useEffect(() => {
     onAuthStateChanged(auth, (user)=>{
       if (user){
@@ -43,7 +47,7 @@ const Profile = () => {
     onAuthStateChanged(auth, (user)=>{
       if (user){
         const uid =  user.uid;
-         const fetchArtistsData = async () => {
+          const fetchArtistsData = async () => {
           const timestamp = ('timestamp', 'desc')
             const artworksRef = collection(db, 'posts');
           const querySnapshot = query(artworksRef, 
@@ -110,11 +114,15 @@ const deleteProduct = async (id, image) => {
     <div className='mainArtistProfile'>
        
       <div className='artistProfile'>
-      
+         
          {getUserName.map((userInfo, index)=>(
           <>
-          <div key={index}>
-          <h1>{userInfo.displayName} {userInfo.lastName}</h1>            
+          <div key={index} className='artistProfileCont'>
+            <img src={userInfo.photoURL} width={80} height={80} alt=''/>
+            <div>
+              <h1>{userInfo.displayName} </h1> 
+              <p>Joined: {userInfo.dateJoined}</p>
+              </div>           
           </div>
           </>
         ))}     
@@ -124,21 +132,29 @@ const deleteProduct = async (id, image) => {
       </div>
 
       <div className='profSection1'>
-        <h1>Your Artworks</h1>
+         
+        <h1>Your Artwork(s)
+          {/* {getArtistsInfo.length} */}
+          </h1> 
+        <h1>{getArtistsInfo.length}</h1>
+       
+        {/* <h2>{displayName}</h2> */}
         <a href='/postartwork'> 
         <h2><IoAdd/> Add artwork</h2>
         </a> 
         </div>
 
       <div className='artworksContainer' id='profileArtWorkContainer'>
-      {
+       {
   getArtistsInfo.map((artwork, index)=>{
     const {id, image, medium, price, name, artSize, displayName, lastName}= artwork;
     return (
+     <>
       <div className='artwork' 
       // key={id}
       key={index}
       >
+        
         {/* <p>{index + 1}</p> */}
       <div className='artcollectionbox'>   
       <div>    
@@ -164,6 +180,7 @@ const deleteProduct = async (id, image) => {
        </div>
        </div>
         </div>
+     </>
     )
   })
 } 

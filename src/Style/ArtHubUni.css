@@ -1,0 +1,14 @@
+.arthubuniContainer{
+    width: 80%;
+    margin: auto;
+    margin-top: 100px;
+    justify-content: center;
+}
+
+.arthubuniContainer h1{
+    font-size: 60px;
+}
+
+#learn h2{
+    font-size: 60px;
+}

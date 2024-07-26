@@ -1,0 +1,41 @@
+.eventContainer {
+    width: 80%;
+    margin: auto;
+    margin-top: 100px;
+    justify-content: center;
+ }
+.eventContainer h1{
+    font-size: 70px;
+}
+
+#eventContent h1{
+    font-size: 40px;
+}
+
+.eventContent {
+    display: flex;
+    align-items: center;
+}
+
+.eventContent img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+ }
+
+ .sndImg img {
+    width: 100%;
+    height: auto;
+ }
+.eventContent h1 {
+    font-size: 30px;
+}
+
+.eventContent h2 {
+    font-size: 25px;
+}
+
+.events {
+   margin-top: 50px;
+
+}

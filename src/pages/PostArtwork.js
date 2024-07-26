@@ -107,14 +107,7 @@ import { onAuthStateChanged } from "firebase/auth";
   const [isLoading, setIsLoading] = useState(false);
   const [getArtistsName, setGetArtistsName] = useState({ displayName: "", lastName: "" });
   const navigate = useNavigate();
-
-
-
-
  
-
-
-  
 useEffect(() => {
     if (user) {
       const fetchData = async () => {
@@ -126,8 +119,7 @@ useEffect(() => {
               querySnapshot.forEach((doc) => {
                 setGetArtistsName({
                   displayName: doc.data().displayName,
-                  lastName: doc.data().lastName,
-                });
+                 });
               });
             } else {
               console.log("No matching documents.");
@@ -181,8 +173,7 @@ useEffect(() => {
         userID: user.uid,
         createdAt: Timestamp.now().toDate(),
         displayName: getArtistsName.displayName,
-        lastName: getArtistsName.lastName,
-      });
+       });
       setIsLoading(false);
       setUploadProgress(0);
       setProduct(initialState);

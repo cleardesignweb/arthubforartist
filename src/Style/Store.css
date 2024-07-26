@@ -1,0 +1,43 @@
+.storeContainer{
+    width: 80%;
+    margin: auto;
+    margin-top: 100px;
+    justify-content: center;
+}
+
+.storeContainer h1{
+    font-size: 60px;
+}
+
+.stores {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+     margin-top: 50px;
+     margin-bottom: 100px;
+  }
+  
+  .storesContent {
+    /* background-color: #fff; */
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+    /* width: 300px;
+    height: 200px; */
+    margin-top: 10px;
+    margin: 10px;
+   
+  }
+  
+  .storesContent img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 100px;
+    object-fit: contain;
+  }
+  
+  .storesContent:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
