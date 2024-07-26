@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 const ArtHubUni = () => {
   return (
     <div className='arthubuniContainer'>
-      <h1>Ehnacned your creativity.</h1>
+      <h1>Enhanced your creativity.</h1>
   
 
 <div className='section1'>
