@@ -11,8 +11,6 @@ import {
   signInWithPopup,
   OAuthProvider,
 } from "firebase/auth";
-import { auth, db } from "../Data/Firebase";
-import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
 import { useAuth } from "./AuthContext";
 
 const Login = () => {

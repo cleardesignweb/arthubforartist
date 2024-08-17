@@ -1,209 +1,219 @@
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { CountryDropdown } from "react-country-region-selector";
 import { useAuth } from "../auth/AuthContext";
-import { db, storage } from "../Data/Firebase";
-import "../Style/EditProfile.css";
+import { auth, db, storage } from "../Data/Firebase";
+import "../Style/AddArtwork.css";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { addDoc, collection, doc, getDocs, orderBy, query, setDoc, Timestamp, where } from "firebase/firestore";
+import Cropper, { ReactCropperElement } from "react-cropper";
+import "cropperjs/dist/cropper.css";
+   
 
-const Type = [
-  { id: "1", name: "Sculpture artist" },
-  { id: "2", name: "Watercolor artist" },
-  { id: "3", name: "Oil Painter artist" },
-  { id: "4", name: "Pasteler artist" },
-  { id: "5", name: "Abstracter artist" },
-  { id: "4", name: "Pop artist" },
-  { id: "4", name: "Realism artist" },
-  { id: "4", name: "Portrait artist" },
-  { id: "4", name: "Fresco artist" },
-  { id: "4", name: "Expressionism artist" },
-  { id: "4", name: "Acrylic artist" },
-];
 
-const initialState = {
-  name: "",
-  profImg: "",
-  displayName: "",
-  lastName: "",
-  type: "",
-};
-
-const PostArtwork = () => {
-  const { user } = useAuth();
-  const [product, setProduct] = useState(initialState);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [getArtistsName, setGetArtistsName] = useState({
+  const Type = [
+    { id: "1", name: "Sculpture artist" },
+    { id: "2", name: "Watercolor artist" },
+    { id: "3", name: "Oil Painter artist" },
+    { id: "4", name: "Pasteler artist" },
+    { id: "5", name: "Abstracter artist" },
+    { id: "6", name: "Pop artist" },
+    { id: "7", name: "Realism artist" },
+    { id: "8", name: "Portrait artist" },
+    { id: "9", name: "Fresco artist" },
+    { id: "10", name: "Expressionism artist" },
+    { id: "11", name: "Acrylic artist" },
+  ];
+  
+  const initialState = {
+    name: "",
+    profImg: "",
     displayName: "",
-    lastName: "",
-  });
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      const fetchData = async () => {
-        const uid = user.uid;
-        if (uid) {
-          try {
-            const querySnapshot = await getDocs(
-              query(
-                collection(db, "artistHubUsers"),
-                where("userID", "==", uid)
-              )
-            );
-            if (!querySnapshot.empty) {
-              querySnapshot.forEach((doc) => {
-                setGetArtistsName({
-                  displayName: doc.data().displayName,
-                });
-              });
-            } else {
-              console.log("No matching documents.");
-            }
-          } catch (error) {
-            console.error("Error fetching artist's name:", error);
-          }
-        }
-      };
-      fetchData();
-    }
-  }, [user]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProduct({ ...product, [name]: value });
+     type: "",
+    bio: "", 
   };
+  
+ 
+  
+  const PostArtwork = () => {
+    const { user } = useAuth();
+    const [product, setProduct] = useState(initialState);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+     const [profImg, setImage] = useState(null);
+     const [cropper, setCropper] = useState();
+    const navigate = useNavigate();
+ 
+     
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    const storageRef = ref(storage, `artwork/${Date.now()}${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setUploadProgress(progress);
-      },
-      (error) => {
-        toast.error(error.message);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setProduct({ ...product, profImg: downloadURL });
-          toast.success("Image uploaded successfully.");
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setProduct({ ...product, [name]: value });
+    };
+  
+    const handleImageChange = (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    };
+  
+    const getCropData = () => {
+      if (cropper) {
+        cropper.getCroppedCanvas().toBlob((blob) => {
+          const file = new File([blob], `croppedImage_${Date.now()}.png`, { type: "image/png" });
+          handleFileUpload(file);
         });
       }
-    );
-  };
-
-  const addProduct = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    const today = new Date();
-    const date = today.toDateString();
-    const Hours = today.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    const time = today.toLocaleDateString();
-    try {
-      const EditProfRef = doc(db, "artistHubUsers", user.uid);
-      await setDoc(EditProfRef, {
-        ...product,
-        userID: user.uid,
-        displayName: getArtistsName.displayName,
-        hourJoined: Hours,
-        createdAt: today,
-        postTime: date,
-        dateJoined: time,
+    };
+    
+  
+    const handleFileUpload = (file) => {
+      const storageRef = ref(storage, `profileImages/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+    
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(progress);
+        },
+        (error) => {
+          toast.error(error.message);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setProduct((prevProduct) => ({
+            ...prevProduct,
+            profImg: downloadURL,
+          }));
+          toast.success("Image uploaded successfully.");
+        }
+      );
+    };
+  
+    const addProduct = async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+      const today = new Date();
+      const date = today.toDateString();
+      const hours = today.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
       });
-      setIsLoading(false);
-      setUploadProgress(0);
-      setProduct(initialState);
-      toast.success("Product uploaded successfully.");
-      navigate("/profile");
-    } catch {
-      setIsLoading(false);
-      console.log("Error editing profile");
-    }
-  };
+      const time = today.toLocaleDateString();
+    
+      try {
+        const EditProfRef = doc(db, "artistHubUsers", user.uid);
+        await setDoc(EditProfRef, {
+          ...product,
+          userID: user.uid,
+           hourJoined: hours,
+          createdAt: today,
+          postTime: date,
+          dateJoined: time,
+        });
+        setIsLoading(false);
+        setUploadProgress(0);
+        setProduct(initialState);
+        toast.success("Profile updated successfully.");
+        navigate("/profile");
+      } catch (error) {
+        setIsLoading(false);
+        console.error("Error editing profile:", error);
+      }
+    };
+  
 
-  return (
-    <>
-      <div className="editProfileContainer">
+  
+    return (
+      <>
+      <div className="postContainer">
         <div className="addArtworkTextH1">
-          <h1>Edit your profile</h1>
+          <h1>Add your artwork here.</h1>
         </div>
-        <form className=" " onSubmit={addProduct}>
+        <form className="addpostForm" onSubmit={addProduct}>
           <div className="addPost_container">
             <div className="artInputs">
+
+            
+
               <input
                 type="file"
                 accept="image/*"
                 placeholder="Product Image"
-                name="profImg"
+                name="image"
                 onChange={handleImageChange}
                 className="image"
               />
-
-              {product.profImg === "" ? null : (
-                <input
-                  type="text"
-                  placeholder="Image URL"
-                  name="profImg"
-                  value={product.profImg}
-                  disabled
-                  style={{ display: "none" }}
-                />
+              {profImg && (
+                <div>
+                  <Cropper
+                    style={{ height: 400, width: "100%" }}
+                    initialAspectRatio={1}
+                    src={profImg}
+                    viewMode={1}
+                    guides={true}
+                    minCropBoxHeight={10}
+                    minCropBoxWidth={10}
+                    background={false}
+                    responsive={true}
+                    autoCropArea={1}
+                    checkOrientation={false}
+                    onInitialized={(instance) => {
+                      setCropper(instance);
+                    }}
+                  />
+                  <button type="button" onClick={getCropData}>
+                    Crop & Upload Image
+                  </button>
+                </div>
               )}
-
+              
               <div className="AddPostInpCon">
                 <div className="addPostInpCon1">
-                  {/* <input
-                    type="text"
-                    placeholder="Full name"
-                    value={product.displayName}
-                    name="displayName"
-                    onChange={handleInputChange}
-                    className="input"
-                  /> */}
 
-                  <select
-                    required
-                    name="type"
-                    value={product.type}
-                    onChange={handleInputChange}
-                    className="input"
-                  >
-                    <option value="" disabled>
-                      {" "}
-                      Type of Artist
-                    </option>
-                    {Type.map((type) => (
-                      <option key={type.id} value={type.name}>
-                        {type.name}
-                      </option>
-                    ))}
-                  </select>
 
-                  <textarea
-                    placeholder="Bio"
-                    required
-                    name="bio"
-                    onChange={handleInputChange}
-                    value={product.bio}
-                    className="input"
-                  ></textarea>
+                <input type="text"
+            placeholder="Full name"
+            required
+            name="displayName"
+            value={product.year}
+            onChange={(e) => handleInputChange(e)}
+          className='input' />
+
+                <select
+  required name="medium"
+  value={product.medium}
+  onChange={(e) => handleInputChange(e)} className='input'>
+  <option value="" disabled> Artist type</option>
+  {Type.map((type) => {
+    return (
+      <option key={type.id} value={type.name}>
+        {type.name}
+      </option>
+    );
+  })}
+</select>
+
+ 
+
+              <textarea
+                  placeholder="Bio"
+                  required
+                  name="bio"
+                  onChange={handleInputChange}
+                  value={product.bio}
+                  className="input"
+                ></textarea>
+
+
+                </div>
+                <div className="addPostInpCon2">
+                  {/* Other inputs */}
                 </div>
               </div>
               <div className="submit">
@@ -217,7 +227,10 @@ const PostArtwork = () => {
         </form>
       </div>
     </>
-  );
-};
+    );
+  };
+  
+  export default PostArtwork;
+  
 
-export default PostArtwork;
+

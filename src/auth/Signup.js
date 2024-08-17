@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "../Style/Login.css";
 import {
   getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
+ 
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,35 +10,14 @@ import {
   signInWithPopup,
   OAuthProvider,
 } from "firebase/auth";
-import { auth, db } from "../Data/Firebase";
-import { addDoc, collection, doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
-import { useAuth } from "./AuthContext";
-
-const Signup = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+import {   db } from "../Data/Firebase";
+import {  doc,   setDoc,   } from "firebase/firestore";
  
+const Signup = () => {
+   const navigate = useNavigate();
+  
 
-  const onLogin = (e) => {
-    e.preventDefault();
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
-        navigate('/');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-        alert('User not signed in, with correct credentials');
-      });
-  };
-
-  const signWithGoogle = (setUser, setIsAdmin) => {
+  const signWithGoogle = () => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     const today = new Date();
@@ -52,7 +30,8 @@ const Signup = () => {
     signInWithPopup(auth, provider)
       .then(async (result) => {
         const user = result.user;
-        setUser(user);
+        if(user){
+
           const ref = doc(db, 'artistHubUsers', user.uid);
           await setDoc(ref, {
             displayName: user.displayName,
@@ -65,10 +44,10 @@ const Signup = () => {
             dateJoined:time,
            });          
           navigate('/editprofile');
-
-         
-         
-         
+        }else {
+          console.error("No user data available after signing up")
+        }
+ 
       })
       .catch((error) => {
         console.log("Error", error);
@@ -98,28 +77,7 @@ const Signup = () => {
         <div className="LoginInfo">
           <h1>Sign up</h1>
           <div className="LoginInfoConetents">
-            {/* <form>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="LoginInput"
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="LoginInput"
-                id="password"
-              />
-            </form> */}
-
-            {/* <button className="LoginButton" type="submit" onClick={onLogin}>
-              Log in
-            </button>
-            <p>Or log in with:</p> */}
+            
             <div className="ServiceLogins">
               <div>
                 <div className="faceTweet">
@@ -139,31 +97,23 @@ const Signup = () => {
                     <h4> Continue with Yahoo</h4>
                   </div>
 
-                  {/* <div className='SocialButtons'
-      onClick={loginInWithFacebook}>
-       <img src={require('../images/Logos/Facebook.png')} alt='facebook logo'/><h4> Continue with Facebook</h4>
-      </div> */}
-
-                  {/* <div className='SocialButtons'
-      onClick={loginWithTwitter}>
-       <img src={require('../images/Logos/Twitter.png')} alt='facebook logo'/><h4> Continue with Twitter</h4>
-      </div> */}
+                 
                 </div>
               </div>
               <div></div>
             </div>
-            {/* <small>
-              Don't have account?{" "}
-              <a href="/signup" className="sgnupin">
+            <small>
+              Already have account?{" "}
+              <a href="/login" className="sgnupin">
                 Sign up
               </a>
-            </small> */}
-            {/* <div>
+            </small>
+            <div>
               <small>
                 By signing up, you agree to our Terms, Data Policy and Cookies
                 Policy.
               </small>
-            </div> */}
+            </div>
           </div>
         </div>
       </section>
